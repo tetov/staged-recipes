@@ -1,0 +1,77 @@
+context:
+  name: fVDB
+  version: "0.2.1"
+
+package:
+  name: ${{ name|lower }}
+  version: ${{ version }}
+
+source:
+  url: https://github.com/AcademySoftwareFoundation/openvdb/archive/fvdb_v${{ version }}.tar.gz
+  sha256: eff774500d92602b76c206c358fa00984c345b21aa4099fcdbafb38a919c05ec
+  patches:
+    - ./setup.py.patch
+
+build:
+  script: cd fvdb && TORCH_CUDA_ARCH_LIST="7.0;7.5;8.0;8.6+PTX" python -m pip install . -vv
+  number: 0
+  skip:
+    - match(python, "<3.11")
+    - cuda_compiler_version == "11.8"
+
+requirements:
+  build:
+    - ${{ compiler('c') }}
+    - ${{ compiler('cuda') }}
+    - ${{ compiler('cxx') }}
+    - ${{ stdlib('c') }}
+    - blosc
+    - cmake
+    - cutlass
+    - git
+    - gitpython
+    - libcublas-dev
+    - libcusolver-dev
+    - libcusparse-dev
+    - make
+    - nanovdb
+    - ninja
+    - pip
+    - pytorch
+    - pytorch-gpu=2.4.1[build=cuda120*]
+    - requests
+    - setuptools
+    - tqdm
+  host:
+    - libcublas-dev
+    - cuda-version=${{ cuda_compiler_version }}
+    - python
+    - pip
+    - setuptools
+    - nanovdb
+  run:
+    - python
+  ignore_run_exports:
+    from_package:
+      - libcublas-dev
+tests:
+  - python:
+      imports:
+        - fVDB
+      pip_check: true
+
+about:
+  homepage: https://developer.nvidia.com/fvdb
+  summary: fVDB is an open-source deep learning framework for sparse, large-scale, high-performance spatial intelligence
+  description: |
+    Data structure for encoding and operating on sparse voxel hierarchies of features in PyTorch. A sparse voxel hierarchy is a coarse-to-fine hierarchy of sparse voxel grids such that every fine voxel is contained within some coarse voxel. The image below illustrates an example. fVDB supports using PyTorch Tensors to represent features at the corners and centers of voxels in a hierarchy and enables a number of differentiable operations on these Tensors (e.g. trilinear interpolation, convolution, splatting, ray tracing).
+  license: Apache-2.0
+  license_file:
+    - LICENSE
+    - RE-LICENSE_NOTE.txt
+  repository: https://github.com/AcademySoftwareFoundation/openvdb/tree/feature/fvdb/fvdb
+
+extra:
+  recipe-maintainers:
+    - swahtz
+    - tetov
