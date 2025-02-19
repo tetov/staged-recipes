@@ -1,0 +1,31 @@
+context:
+  version: 0.3.6
+
+package:
+  name: liblzf
+  version: ${{ version }}
+
+source:
+- url: http://dist.schmorp.de/liblzf/liblzf-3.6.tar.gz
+  sha256: 9c5de01f7b9ccae40c3f619d26a7abec9986c06c36d260c179cedd04b89fb46a
+
+build:
+  number: 0
+  script:
+    - ./configure --prefix=$PREFIX
+    - make install
+
+requirements:
+  build:
+    - ${{ compiler('c') }}
+    - automake
+
+# tests: {}
+
+about:
+  homepage: http://software.schmorp.de/pkg/liblzf.html 
+  summary: LibLZF is a very small data compression library.
+  description: |
+     This library implements the very, very fast LZF compression algorithm written in C. Compression ratios are moderate with 40 to 50 percent for typical binary data, but decompression speed is basically at unoptimized memcpy speed.
+  license: BSD-2-Clause
+  license_file: LICENSE
